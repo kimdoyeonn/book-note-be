@@ -12,3 +12,58 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+
+  Note     Note[]
+  UserBook UserBook[]
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+}
+
+model UserBook {
+  id Int @id @default(autoincrement())
+
+  userId Int
+  bookId Int
+  user   User @relation(fields: [userId], references: [id])
+  book   Book @relation(fields: [bookId], references: [id])
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+}
+
+model Book {
+  id           Int      @id @default(autoincrement())
+  isbn         String
+  title        String
+  summary      String?
+  shared       Boolean? @default(false)
+  author       String
+  thumbnailUrl String?
+  publisher    String
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  UserBook UserBook[]
+  Notes    Note[]
+}
+
+model Note {
+  id      Int    @id @default(autoincrement())
+  content String
+
+  userId Int
+  bookId Int
+
+  User User @relation(fields: [userId], references: [id])
+  Book Book @relation(fields: [bookId], references: [id])
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+}
