@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,56 +8,49 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-
-  Note     Note[]
-  UserBook UserBook[]
-
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  id           Int        @id @default(autoincrement())
+  createdAt    DateTime   @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime   @updatedAt @db.Timestamptz(6)
+  provider     String     @unique
+  providerId   String     @unique
+  refreshToken String?
+  username     String?
+  Note         Note[]
+  UserBook     UserBook[]
 }
 
 model UserBook {
-  id Int @id @default(autoincrement())
-
-  userId Int
-  bookId Int
-  user   User @relation(fields: [userId], references: [id])
-  book   Book @relation(fields: [bookId], references: [id])
-
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  bookId    Int
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  book      Book     @relation(fields: [bookId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Book {
-  id           Int      @id @default(autoincrement())
+  id           Int        @id @default(autoincrement())
   isbn         String
   title        String
   summary      String?
-  shared       Boolean? @default(false)
+  shared       Boolean?   @default(false)
   author       String
   thumbnailUrl String?
   publisher    String
-
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-
-  UserBook UserBook[]
-  Notes    Note[]
+  createdAt    DateTime   @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime   @updatedAt @db.Timestamptz(6)
+  Notes        Note[]
+  UserBook     UserBook[]
 }
 
 model Note {
-  id      Int    @id @default(autoincrement())
-  content String
-
-  userId Int
-  bookId Int
-
-  User User @relation(fields: [userId], references: [id])
-  Book Book @relation(fields: [bookId], references: [id])
-
+  id        Int      @id @default(autoincrement())
+  content   String
+  userId    Int
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  bookId    Int
+  Book      Book     @relation(fields: [bookId], references: [id])
+  User      User     @relation(fields: [userId], references: [id])
 }
