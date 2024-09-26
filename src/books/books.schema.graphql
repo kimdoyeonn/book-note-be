@@ -7,8 +7,6 @@ type Book {
   author: String!
   thumbnailUrl: String!
   publisher: String!
-  like: Boolean
-  userId: Int!
   notes: [Note!]!
 }
 
@@ -18,13 +16,19 @@ type Note {
   bookId: Int!
 }
 
+type BookLike {
+  id: ID!
+  userId: Int!
+  bookId: Int!
+  isLike: Boolean!
+}
+
 input CreateBookInput {
   isbn: String!
   title: String!
   summary: String!
   shared: Boolean
   author: String!
-  userId: Int!
   like: Boolean
   thumbnailUrl: String!
   publisher: String!
@@ -37,6 +41,6 @@ type Query {
 }
 
 type Mutation {
-  createBook(input: CreateBookInput!): Book!
-  likeBook(id: Int): Book!
+  createBook(userId: Int!, input: CreateBookInput!): Book!
+  likeBook(userId: Int!, bookId: Int!): BookLike!
 }

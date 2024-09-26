@@ -15,13 +15,38 @@ model User {
   providerId   String   @unique
   refreshToken String?
   username     String?
-  Note         Note[]
-  Book         Book[]
+
+  notes     Note[]
+  userBooks UserBook[]
+  bookLike  BookLike[]
+}
+
+model UserBook {
+  id     Int @id @default(autoincrement())
+  userId Int
+  bookId Int
+
+  book Book @relation(fields: [bookId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, bookId])
+}
+
+model BookLike {
+  id     Int     @id @default(autoincrement())
+  bookId Int
+  userId Int
+  isLike Boolean @default(false)
+
+  book Book @relation(fields: [bookId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, bookId])
 }
 
 model Book {
   id           Int      @id @default(autoincrement())
-  isbn         String
+  isbn         String   @unique
   title        String
   summary      String?
   shared       Boolean? @default(false)
@@ -31,10 +56,10 @@ model Book {
   createdAt    DateTime @default(now()) @db.Timestamptz(6)
   updatedAt    DateTime @updatedAt @db.Timestamptz(6)
   like         Boolean?
-  Notes        Note[]
 
-  User   User? @relation(fields: [userId], references: [id])
-  userId Int?
+  notes    Note[]
+  userBook UserBook[]
+  bookLike BookLike[]
 }
 
 model Note {
@@ -44,6 +69,7 @@ model Note {
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
   bookId    Int
-  Book      Book     @relation(fields: [bookId], references: [id])
-  User      User     @relation(fields: [userId], references: [id])
+
+  book Book @relation(fields: [bookId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }

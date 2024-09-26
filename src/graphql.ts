@@ -14,7 +14,6 @@ export class CreateBookInput {
     summary: string;
     shared?: Nullable<boolean>;
     author: string;
-    userId: number;
     like?: Nullable<boolean>;
     thumbnailUrl: string;
     publisher: string;
@@ -29,8 +28,6 @@ export class Book {
     author: string;
     thumbnailUrl: string;
     publisher: string;
-    like?: Nullable<boolean>;
-    userId: number;
     notes: Note[];
 }
 
@@ -40,6 +37,13 @@ export class Note {
     bookId: number;
 }
 
+export class BookLike {
+    id: string;
+    userId: number;
+    bookId: number;
+    isLike: boolean;
+}
+
 export abstract class IQuery {
     abstract books(): Book[] | Promise<Book[]>;
 
@@ -47,9 +51,9 @@ export abstract class IQuery {
 }
 
 export abstract class IMutation {
-    abstract createBook(input: CreateBookInput): Book | Promise<Book>;
+    abstract createBook(userId: number, input: CreateBookInput): Book | Promise<Book>;
 
-    abstract likeBook(id?: Nullable<number>): Book | Promise<Book>;
+    abstract likeBook(userId: number, bookId: number): BookLike | Promise<BookLike>;
 }
 
 type Nullable<T> = T | null;

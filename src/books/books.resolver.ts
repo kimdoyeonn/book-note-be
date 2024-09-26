@@ -13,15 +13,21 @@ export class BooksResolver {
   }
 
   @Mutation(() => Book)
-  async createBook(@Args('input') input: CreateBookInput) {
-    const book = await this.booksService.create(input);
+  async createBook(
+    @Args('userId') userId: number,
+    @Args('input') input: CreateBookInput,
+  ) {
+    const book = await this.booksService.create(userId, input);
 
     return book;
   }
 
   @Mutation(() => Book)
-  async likeBook(@Args('id') id: number) {
-    const book = await this.booksService.likeBook(id);
+  async likeBook(
+    @Args('userId') userId: number,
+    @Args('bookId') bookId: number,
+  ) {
+    const book = await this.booksService.likeBook(userId, bookId);
     return book;
   }
 }
