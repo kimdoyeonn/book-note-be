@@ -1,0 +1,16 @@
+type Book {
+  id: ID!
+  isbn: String!
+  title: String!
+  summary: String!
+  shared: Boolean
+  author: String!
+  thumbnailUrl: String!
+  publisher: String!
+}
+
+type Query {
+  books: [Book!]!
+
+  book(id: ID!): Book
+}
