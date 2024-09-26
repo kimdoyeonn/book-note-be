@@ -1,11 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import axios from 'axios';
 import { PrismaService } from 'src/prisma.service';
 import { CreateBookInput } from './dto/create-book.input';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class BooksService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async findOneById(id: number) {
     const result = this.prisma.book.findUnique({ where: { id } });
@@ -109,6 +118,58 @@ export class BooksService {
       return data;
     } catch (err) {
       console.error(err);
+    }
+  }
+
+  async generateShareToken(userId: number, bookId: number) {
+    // 토큰 만료 시간을 10분으로 설정
+    const expiredAt = Math.floor(Date.now() / 1000) + 10 * 60;
+    const payload = { userId, bookId, expiredAt };
+
+    const token = this.jwtService.sign(payload, {
+      expiresIn: '10m',
+      secret: process.env.JWT_SECRET,
+    });
+
+    return { token };
+  }
+
+  async findOneWithNotes(userId: number, bookId: number) {
+    return this.prisma.book.findUnique({
+      where: { id: bookId, userBook: { every: { userId, bookId } } },
+      include: {
+        notes: true,
+        userBook: true,
+      },
+    });
+  }
+
+  async verifyTokenAndGetBookWithNotes(token: string) {
+    try {
+      if (!token) {
+        throw new BadRequestException('Token must be provided');
+      }
+      const { userId, bookId, expiredAt } = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET,
+      });
+
+      if (expiredAt < Math.floor(Date.now() / 1000)) {
+        throw new UnauthorizedException('Expired Token');
+      }
+
+      // 책과 노트를 조회
+      const book = await this.findOneWithNotes(userId, bookId);
+      if (
+        !book ||
+        book.userBook.filter((ub) => ub.userId === userId).length === 0
+      ) {
+        throw new UnauthorizedException('You do not have access to this book.');
+      }
+
+      return { book };
+    } catch (error) {
+      console.error('verifyTokenAndGetBookWithNotes', error);
+      throw new ForbiddenException('Invalid or expired token');
     }
   }
 }
