@@ -2,7 +2,6 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { BooksService } from './books.service';
 import { Book } from 'src/graphql';
 import { CreateBookInput } from './dto/create-book.input';
-import { InternalServerErrorException } from '@nestjs/common';
 
 @Resolver(() => Book)
 export class BooksResolver {
@@ -15,13 +14,14 @@ export class BooksResolver {
 
   @Mutation(() => Book)
   async createBook(@Args('input') input: CreateBookInput) {
-    try {
-      const book = await this.booksService.create(input);
+    const book = await this.booksService.create(input);
 
-      return book;
-    } catch (error) {
-      console.error('Error creating book:', error);
-      throw new InternalServerErrorException('Internal server error'); // 사용자에게 보여줄 일반적인 에러 메시지
-    }
+    return book;
+  }
+
+  @Mutation(() => Book)
+  async likeBook(@Args('id') id: number) {
+    const book = await this.booksService.likeBook(id);
+    return book;
   }
 }

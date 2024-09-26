@@ -38,4 +38,5 @@ type Query {
 
 type Mutation {
   createBook(input: CreateBookInput!): Book!
+  likeBook(id: Int): Book!
 }

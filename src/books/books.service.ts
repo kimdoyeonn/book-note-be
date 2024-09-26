@@ -27,6 +27,15 @@ export class BooksService {
     return result;
   }
 
+  async likeBook(id: number) {
+    const result = await this.prisma.book.update({
+      where: { id },
+      data: { like: true },
+    });
+
+    return result;
+  }
+
   async searchBooks(keyword: string, page: number, limit: number) {
     try {
       const { data } = await axios.get(

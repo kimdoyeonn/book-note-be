@@ -48,6 +48,8 @@ export abstract class IQuery {
 
 export abstract class IMutation {
     abstract createBook(input: CreateBookInput): Book | Promise<Book>;
+
+    abstract likeBook(id?: Nullable<number>): Book | Promise<Book>;
 }
 
 type Nullable<T> = T | null;
