@@ -7,10 +7,35 @@ type Book {
   author: String!
   thumbnailUrl: String!
   publisher: String!
+  like: Boolean
+  userId: Int!
+  notes: [Note!]!
+}
+
+type Note {
+  content: String!
+  userId: Int!
+  bookId: Int!
+}
+
+input CreateBookInput {
+  isbn: String!
+  title: String!
+  summary: String!
+  shared: Boolean
+  author: String!
+  userId: Int!
+  like: Boolean
+  thumbnailUrl: String!
+  publisher: String!
 }
 
 type Query {
   books: [Book!]!
 
   book(id: ID!): Book
+}
+
+type Mutation {
+  createBook(input: CreateBookInput!): Book!
 }

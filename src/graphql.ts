@@ -8,7 +8,19 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export interface Book {
+export class CreateBookInput {
+    isbn: string;
+    title: string;
+    summary: string;
+    shared?: Nullable<boolean>;
+    author: string;
+    userId: number;
+    like?: Nullable<boolean>;
+    thumbnailUrl: string;
+    publisher: string;
+}
+
+export class Book {
     id: string;
     isbn: string;
     title: string;
@@ -17,11 +29,25 @@ export interface Book {
     author: string;
     thumbnailUrl: string;
     publisher: string;
+    like?: Nullable<boolean>;
+    userId: number;
+    notes: Note[];
 }
 
-export interface IQuery {
-    books(): Book[] | Promise<Book[]>;
-    book(id: string): Nullable<Book> | Promise<Nullable<Book>>;
+export class Note {
+    content: string;
+    userId: number;
+    bookId: number;
+}
+
+export abstract class IQuery {
+    abstract books(): Book[] | Promise<Book[]>;
+
+    abstract book(id: string): Nullable<Book> | Promise<Nullable<Book>>;
+}
+
+export abstract class IMutation {
+    abstract createBook(input: CreateBookInput): Book | Promise<Book>;
 }
 
 type Nullable<T> = T | null;
