@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,56 +8,71 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(6)
+  provider     String
+  providerId   String
+  refreshToken String?
+  username     String?
 
-  Note     Note[]
-  UserBook UserBook[]
+  notes     Note[]
+  userBooks UserBook[]
+  bookLike  BookLike[]
 
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  @@unique([provider, providerId])
 }
 
 model UserBook {
-  id Int @id @default(autoincrement())
-
+  id     Int @id @default(autoincrement())
   userId Int
   bookId Int
-  user   User @relation(fields: [userId], references: [id])
-  book   Book @relation(fields: [bookId], references: [id])
 
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  book Book @relation(fields: [bookId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, bookId])
+}
+
+model BookLike {
+  id     Int     @id @default(autoincrement())
+  bookId Int
+  userId Int
+  isLike Boolean @default(false)
+
+  book Book @relation(fields: [bookId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, bookId])
 }
 
 model Book {
   id           Int      @id @default(autoincrement())
-  isbn         String
+  isbn         String   @unique
   title        String
   summary      String?
   shared       Boolean? @default(false)
   author       String
   thumbnailUrl String?
   publisher    String
+  createdAt    DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(6)
+  like         Boolean?
 
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-
-  UserBook UserBook[]
-  Notes    Note[]
+  notes    Note[]
+  userBook UserBook[]
+  bookLike BookLike[]
 }
 
 model Note {
-  id      Int    @id @default(autoincrement())
-  content String
-
-  userId Int
-  bookId Int
-
-  User User @relation(fields: [userId], references: [id])
-  Book Book @relation(fields: [bookId], references: [id])
-
+  id        Int      @id @default(autoincrement())
+  content   String
+  userId    Int
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  bookId    Int
+  isDeleted Boolean  @default(false)
+
+  book Book @relation(fields: [bookId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
