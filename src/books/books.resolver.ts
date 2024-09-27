@@ -2,8 +2,7 @@ import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { BooksService } from './books.service';
 import { Book } from 'src/graphql';
 import { CreateBookInput } from './dto/create-book.input';
-import { Req, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UseGuards } from '@nestjs/common';
 import { GraphqlAuthGuard } from 'src/auth/graphql-auth.guard';
 
 @Resolver(() => Book)
@@ -17,9 +16,14 @@ export class BooksResolver {
   }
 
   @UseGuards(GraphqlAuthGuard)
+  @Query(() => [Book])
+  async books(@Context('req') req) {
+    return await this.booksService.findBooks(req.user.userId);
+  }
+
+  @UseGuards(GraphqlAuthGuard)
   @Mutation(() => Book)
   async createBook(@Context('req') req, @Args('input') input: CreateBookInput) {
-    console.log(req.user);
     const book = await this.booksService.create(req.user.userId, input);
 
     return book;

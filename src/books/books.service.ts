@@ -21,6 +21,16 @@ export class BooksService {
     return result;
   }
 
+  async findBooks(userId: number) {
+    const result = this.prisma.book.findMany({
+      where: { userBook: { some: { userId } } },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    return result;
+  }
+
   // 책을 생성하고 책과 사용자를 연결
   async create(userId: number, input: CreateBookInput) {
     // ISBN 중복 체크

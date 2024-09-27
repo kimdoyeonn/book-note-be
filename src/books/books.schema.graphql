@@ -36,8 +36,7 @@ input CreateBookInput {
 
 type Query {
   books: [Book!]!
-
-  book(id: ID!): Book
+  book(id: Int!): Book
 }
 
 type Mutation {
