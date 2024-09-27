@@ -51,9 +51,9 @@ export abstract class IQuery {
 }
 
 export abstract class IMutation {
-    abstract createBook(userId: number, input: CreateBookInput): Book | Promise<Book>;
+    abstract createBook(input: CreateBookInput): Book | Promise<Book>;
 
-    abstract likeBook(userId: number, bookId: number): BookLike | Promise<BookLike>;
+    abstract likeBook(bookId: number): BookLike | Promise<BookLike>;
 }
 
 type Nullable<T> = T | null;

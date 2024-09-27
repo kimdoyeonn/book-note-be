@@ -122,6 +122,19 @@ export class BooksService {
   }
 
   async generateShareToken(userId: number, bookId: number) {
+    const existedBook = await this.prisma.userBook.findUnique({
+      where: {
+        userId_bookId: {
+          userId,
+          bookId,
+        },
+      },
+    });
+
+    if (!existedBook) {
+      throw new BadRequestException('UserBook not exists');
+    }
+
     // 토큰 만료 시간을 10분으로 설정
     const expiredAt = Math.floor(Date.now() / 1000) + 10 * 60;
     const payload = { userId, bookId, expiredAt };

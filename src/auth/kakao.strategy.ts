@@ -13,29 +13,19 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     });
   }
 
+  // POST /oauth/token 요청에 대한 응답이 담깁니다.
   async validate(
-    // POST /oauth/token 요청에 대한 응답이 담깁니다.
-    accessToken: string,
-    refreshToken: string,
+    at: string,
+    rt: string,
     profile: Profile,
     done: (error: any, user?: any, info?: any) => void,
   ) {
     try {
       const { _json } = profile;
 
-      let user = await this.authService.findUserByKakaoId(_json.id.toString());
-
-      if (!user) {
-        user = await this.authService.registerUser({
-          provider: 'kakao',
-          providerId: _json.id.toString(),
-          refreshToken,
-        });
-      } else {
-        await this.authService.updateUserRefreshToken(user.id, {
-          refreshToken,
-        });
-      }
+      const user = await this.authService.validateKakaoUser(
+        _json.id.toString(),
+      );
 
       done(null, user);
     } catch (error) {

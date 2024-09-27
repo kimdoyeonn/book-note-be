@@ -1,10 +1,20 @@
-import { Body, Controller, Get, Patch, Post, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { BooksService } from './books.service';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('books')
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async searchBooks(
     @Query('keyword') keyword: string,
@@ -20,12 +30,10 @@ export class BooksController {
     return { ...result };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('/share')
-  async getShareToken(
-    @Body('userId') userId: number,
-    @Body('bookId') bookId: number,
-  ) {
-    return this.booksService.generateShareToken(userId, bookId);
+  async getShareToken(@Req() req, @Body('bookId') bookId: number) {
+    return this.booksService.generateShareToken(req.user.id, bookId);
   }
 
   @Get('/share/view')

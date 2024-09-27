@@ -41,6 +41,6 @@ type Query {
 }
 
 type Mutation {
-  createBook(userId: Int!, input: CreateBookInput!): Book!
-  likeBook(userId: Int!, bookId: Int!): BookLike!
+  createBook(input: CreateBookInput!): Book!
+  likeBook(bookId: Int!): BookLike!
 }

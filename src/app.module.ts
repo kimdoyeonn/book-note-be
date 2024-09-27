@@ -21,8 +21,7 @@ import { join } from 'path';
         path: join(process.cwd(), 'src/graphql.ts'),
         outputAs: 'class',
       },
-      debug: true, // 디버그 옵션 활성화
-      playground: true,
+      context: ({ req, res }) => ({ req, res }),
     }),
     BooksModule,
   ],
