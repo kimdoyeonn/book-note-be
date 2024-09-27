@@ -32,7 +32,7 @@
 
 ### 기타
 
-- [ ] API 테스트 Postman 사용
+- [x] [API 테스트 Postman 사용](https://www.postman.com/lunar-crescent-491034/book-note/collection/xitymnj/api-documentation)
 - [ ] NestJS의 Guard, Interceptor 클래스 활용
 - [ ] GraphQL Schema First 방식 사용
 - [ ] Jest 테스트 코드 작성
