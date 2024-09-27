@@ -8,40 +8,60 @@ datasource db {
 }
 
 model User {
-  id           Int        @id @default(autoincrement())
-  createdAt    DateTime   @default(now()) @db.Timestamptz(6)
-  updatedAt    DateTime   @updatedAt @db.Timestamptz(6)
-  provider     String     @unique
-  providerId   String     @unique
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(6)
+  provider     String
+  providerId   String
   refreshToken String?
   username     String?
-  Note         Note[]
-  UserBook     UserBook[]
+
+  notes     Note[]
+  userBooks UserBook[]
+  bookLike  BookLike[]
+
+  @@unique([provider, providerId])
 }
 
 model UserBook {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  bookId    Int
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-  book      Book     @relation(fields: [bookId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
+  id     Int @id @default(autoincrement())
+  userId Int
+  bookId Int
+
+  book Book @relation(fields: [bookId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, bookId])
+}
+
+model BookLike {
+  id     Int     @id @default(autoincrement())
+  bookId Int
+  userId Int
+  isLike Boolean @default(false)
+
+  book Book @relation(fields: [bookId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, bookId])
 }
 
 model Book {
-  id           Int        @id @default(autoincrement())
-  isbn         String
+  id           Int      @id @default(autoincrement())
+  isbn         String   @unique
   title        String
   summary      String?
-  shared       Boolean?   @default(false)
+  shared       Boolean? @default(false)
   author       String
   thumbnailUrl String?
   publisher    String
-  createdAt    DateTime   @default(now()) @db.Timestamptz(6)
-  updatedAt    DateTime   @updatedAt @db.Timestamptz(6)
-  Notes        Note[]
-  UserBook     UserBook[]
+  createdAt    DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(6)
+  like         Boolean?
+
+  notes    Note[]
+  userBook UserBook[]
+  bookLike BookLike[]
 }
 
 model Note {
@@ -51,6 +71,8 @@ model Note {
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
   bookId    Int
-  Book      Book     @relation(fields: [bookId], references: [id])
-  User      User     @relation(fields: [userId], references: [id])
+  isDeleted Boolean  @default(false)
+
+  book Book @relation(fields: [bookId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }

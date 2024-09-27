@@ -1,0 +1,41 @@
+type Book {
+  id: ID!
+  isbn: String!
+  title: String!
+  summary: String!
+  shared: Boolean
+  author: String!
+  thumbnailUrl: String!
+  publisher: String!
+  notes: [Note!]!
+}
+
+type Note {
+  id: ID!
+  content: String!
+  userId: Int!
+  bookId: Int!
+}
+
+type BookLike {
+  id: ID!
+  userId: Int!
+  bookId: Int!
+  isLike: Boolean!
+}
+
+input CreateNoteInput {
+  content: String!
+  bookId: Int!
+}
+
+type Query {
+  notes(bookId: Int): [Note!]!
+  note(id: Int!): Note
+}
+
+type Mutation {
+  createNote(input: CreateNoteInput!): Note!
+  deleteNote(id: Int!): Boolean
+  editNote(id: Int!, content: String!): Note!
+}
