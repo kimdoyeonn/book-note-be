@@ -11,14 +11,16 @@ model User {
   id           Int      @id @default(autoincrement())
   createdAt    DateTime @default(now()) @db.Timestamptz(6)
   updatedAt    DateTime @updatedAt @db.Timestamptz(6)
-  provider     String   @unique
-  providerId   String   @unique
+  provider     String
+  providerId   String
   refreshToken String?
   username     String?
 
   notes     Note[]
   userBooks UserBook[]
   bookLike  BookLike[]
+
+  @@unique([provider, providerId])
 }
 
 model UserBook {
@@ -69,6 +71,7 @@ model Note {
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
   bookId    Int
+  isDeleted Boolean  @default(false)
 
   book Book @relation(fields: [bookId], references: [id])
   user User @relation(fields: [userId], references: [id])

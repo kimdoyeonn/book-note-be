@@ -21,6 +21,9 @@
     "docker:up": "docker compose -f docker-compose.yml up -d --build",
     "docker:down": "docker compose -f docker-compose.yml down"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "engines": {
     "node": "~18.18.0"
   },
